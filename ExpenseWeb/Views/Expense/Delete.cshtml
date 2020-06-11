@@ -1,0 +1,7 @@
+﻿@model ExpenseWeb.Models.ExpenseDeleteViewModel
+
+<form asp-controller="expense" asp-action="ConfirmDelete" method="post">
+    Bent u zeker dat u <bold>@Model.Omschrijving - @Model.Bedrag - @Model.Datum</bold> wilt verwijderen?
+    <button class="btn btn-primary" type="submit" style="background-color:red">Verwijderen</button>
+</form>
+<a asp-controller="Expense" asp-action="Index">Keer terug naar overzicht</a>

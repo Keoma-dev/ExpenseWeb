@@ -45,6 +45,38 @@ namespace ExpenseWeb.Controllers
                 expenses.Add(new ExpenseListViewModel { Id = expense.Id, Omschrijving = expense.Omschrijving, Datum = expense.Datum, Bedrag = expense.Bedrag });
             }
             return View(expenses);
+        }        
+    
+        public IActionResult Delete(int id)
+        {
+            _expenseDatabase.Delete(id);
+            return RedirectToAction("Index");
+            
+        }
+        public IActionResult Edit(int id)
+        {
+            var expense = _expenseDatabase.GetExpense(id);
+            ExpenseEditViewModel showExpense = new ExpenseEditViewModel()
+            {                
+                Omschrijving = expense.Omschrijving,
+                Datum = expense.Datum,
+                Bedrag = expense.Bedrag
+            };
+            return View(showExpense);
+        }
+        [HttpPost]
+        public IActionResult Edit(int id, ExpenseEditViewModel editedExpense)
+        {
+            var expense = new Expense()
+            {
+                Id = id,
+                Omschrijving = editedExpense.Omschrijving,
+                Datum = editedExpense.Datum,
+                Bedrag = editedExpense.Bedrag
+            };
+
+            _expenseDatabase.Update(id, expense);
+            return RedirectToAction("Index");
         }
     }
 }
