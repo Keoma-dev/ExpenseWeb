@@ -4,9 +4,11 @@ namespace ExpenseWeb.Models
 {
     public class ExpenseStatisticsViewModel
     {
-        public int HoogsteUitgave { get; set; }
-        public int LaagsteUitgave { get; set; }
+        public string Omschrijving { get; set; }
+        public DateTime Datum { get; set; }
 
+        public decimal Bedrag { get; set; }
+        public string Categorie { get; set; }
     }
         
 }

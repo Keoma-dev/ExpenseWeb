@@ -23,13 +23,16 @@ namespace ExpenseWeb.Controllers
             return View();
         }
         [HttpPost]
+        [AutoValidateAntiforgeryToken]
         public IActionResult Create(ExpenseCreateViewModel expense)
         {
             Expense newExpense = new Expense()
             {
                 Omschrijving = expense.Omschrijving,
                 Datum = expense.Datum,
-                Bedrag = expense.Bedrag
+                Bedrag = expense.Bedrag,
+                Categorie = expense.Categorie
+                
             };
 
             _expenseDatabase.Insert(newExpense);
@@ -42,7 +45,7 @@ namespace ExpenseWeb.Controllers
 
             foreach (var expense in expensesFromDb)
             {
-                expenses.Add(new ExpenseListViewModel { Id = expense.Id, Omschrijving = expense.Omschrijving, Datum = expense.Datum, Bedrag = expense.Bedrag });
+                expenses.Add(new ExpenseListViewModel { Id = expense.Id, Omschrijving = expense.Omschrijving, Datum = expense.Datum, Bedrag = expense.Bedrag, Categorie = expense.Categorie });
             }
             return View(expenses);
         }        
@@ -60,11 +63,13 @@ namespace ExpenseWeb.Controllers
             {                
                 Omschrijving = expense.Omschrijving,
                 Datum = expense.Datum,
-                Bedrag = expense.Bedrag
+                Bedrag = expense.Bedrag,
+                Categorie = expense.Categorie
             };
             return View(showExpense);
         }
         [HttpPost]
+        [AutoValidateAntiforgeryToken]
         public IActionResult Edit(int id, ExpenseEditViewModel editedExpense)
         {
             var expense = new Expense()
@@ -72,23 +77,13 @@ namespace ExpenseWeb.Controllers
                 Id = id,
                 Omschrijving = editedExpense.Omschrijving,
                 Datum = editedExpense.Datum,
-                Bedrag = editedExpense.Bedrag
+                Bedrag = editedExpense.Bedrag,
+                Categorie = editedExpense.Categorie                
             };
 
             _expenseDatabase.Update(id, expense);
             return RedirectToAction("Index");
-        }
-        public IActionResult Statistics()
-        {
-            ExpenseStatisticsViewModel expenseResult = new ExpenseStatisticsViewModel();
-            IEnumerable<Expense> expenses = _expenseDatabase.GetExpenses();
-
-            expenseResult.HoogsteUitgave = Convert.ToInt32(expenses.OrderByDescending(item => item.Bedrag).First().Bedrag);
-
-            expenseResult.LaagsteUitgave = Convert.ToInt32(expenses.OrderByDescending(item => item.Bedrag).Last().Bedrag);
-
-            return View(expenseResult);
-        }
+        }       
 
         
     }

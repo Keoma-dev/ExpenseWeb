@@ -62,6 +62,7 @@ namespace ExpenseWeb.Database
                 expense.Omschrijving = updatedExpense.Omschrijving;
                 expense.Datum = updatedExpense.Datum;
                 expense.Bedrag = updatedExpense.Bedrag;
+                expense.Categorie = updatedExpense.Categorie;
             }
         }
     

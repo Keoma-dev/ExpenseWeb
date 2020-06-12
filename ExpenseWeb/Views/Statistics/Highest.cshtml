@@ -1,0 +1,35 @@
+﻿@model ExpenseWeb.Models.ExpenseStatisticsViewModel
+
+@if (Model == null)
+{
+    <p>
+        Er zijn nog geen uitgaven toegevoegd!
+    </p>
+}
+else
+{
+<table>
+    <tr>
+        <th style="width:200px">
+            Omschrijving
+        </th>
+        <th style="width:200px">
+            Bedrag
+        </th>            
+        <th style="width:200px">
+            Datum
+        </th>
+    </tr>
+    <tr>
+        <td>
+            @Model.Omschrijving
+        </td>
+        <td>
+            € @Model.Bedrag
+        </td>
+        <td>
+            @Model.Datum
+        </td>
+    </tr>
+</table>
+}

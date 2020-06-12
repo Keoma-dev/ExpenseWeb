@@ -1,0 +1,41 @@
+﻿@model IEnumerable<ExpenseListViewModel>
+@if (Model == null)
+{
+    <p>
+        Er zijn nog geen uitgaven toegevoegd!
+    </p>
+}
+else
+{
+    <table>
+        <tr>
+            <th style="width:200px">
+                Totaaluitgave
+            </th>
+            <th style="width:200px">
+                Maand
+            </th>
+        </tr>
+
+        @foreach (var expense in SortList(Model))
+        {
+            <tr>
+                <td>
+                    @expense.Bedrag
+                </td>
+                <td>
+                    @expense.Datum.ToString("MMMM")
+                </td>
+            </tr>
+        }
+
+    </table>
+
+    @functions{
+        public IEnumerable<ExpenseWeb.Models.ExpenseListViewModel> SortList(IEnumerable<ExpenseWeb.Models.ExpenseListViewModel> list)
+        {
+            IEnumerable<ExpenseWeb.Models.ExpenseListViewModel> SortedList = list.OrderByDescending(e => e.Datum).ToList();
+            return SortedList;
+        }
+    }
+}
