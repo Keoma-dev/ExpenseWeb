@@ -78,5 +78,18 @@ namespace ExpenseWeb.Controllers
             _expenseDatabase.Update(id, expense);
             return RedirectToAction("Index");
         }
+        public IActionResult Statistics()
+        {
+            ExpenseStatisticsViewModel expenseResult = new ExpenseStatisticsViewModel();
+            IEnumerable<Expense> expenses = _expenseDatabase.GetExpenses();
+
+            expenseResult.HoogsteUitgave = Convert.ToInt32(expenses.OrderByDescending(item => item.Bedrag).First().Bedrag);
+
+            expenseResult.LaagsteUitgave = Convert.ToInt32(expenses.OrderByDescending(item => item.Bedrag).Last().Bedrag);
+
+            return View(expenseResult);
+        }
+
+        
     }
 }

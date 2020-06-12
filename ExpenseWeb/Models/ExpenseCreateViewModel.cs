@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace ExpenseWeb.Models
 {
@@ -6,6 +7,7 @@ namespace ExpenseWeb.Models
     {
         public string Omschrijving { get; set; }
         public DateTime Datum { get; set; }        
+        
         public decimal Bedrag { get; set; }
     }
         

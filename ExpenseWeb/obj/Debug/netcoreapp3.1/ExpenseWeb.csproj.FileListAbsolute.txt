@@ -39,3 +39,4 @@ C:\Users\Keoma\source\repos\ExpenseWeb\ExpenseWeb\obj\Debug\netcoreapp3.1\Expens
 C:\Users\Keoma\source\repos\ExpenseWeb\ExpenseWeb\obj\Debug\netcoreapp3.1\Razor\Views\Expense\Index.cshtml.g.cs
 C:\Users\Keoma\source\repos\ExpenseWeb\ExpenseWeb\obj\Debug\netcoreapp3.1\Razor\Views\Expense\Delete.cshtml.g.cs
 C:\Users\Keoma\source\repos\ExpenseWeb\ExpenseWeb\obj\Debug\netcoreapp3.1\Razor\Views\Expense\Edit.cshtml.g.cs
+C:\Users\Keoma\source\repos\ExpenseWeb\ExpenseWeb\obj\Debug\netcoreapp3.1\Razor\Views\Expense\Statistics.cshtml.g.cs

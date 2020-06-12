@@ -1,0 +1,20 @@
+﻿@model ExpenseWeb.Models.ExpenseStatisticsViewModel
+
+<table>
+    <tr>
+        <th style="width:200px">
+            Hoogste Uitgave
+        </th>
+        <th>
+            Laagste Uitgave
+        </th>
+    </tr>
+    <tr>
+        <td>
+            € @Model.HoogsteUitgave
+        </td>
+        <td>
+            € @Model.LaagsteUitgave
+        </td>
+    </tr>
+</table>
