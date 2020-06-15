@@ -24,5 +24,12 @@
                 <option>Multimedia</option>
             </select>
         </div>
+        <div class="form-group">
+            <label asp-for="Photo"></label>
+            <br />
+            <img src="@Model.PhotoUrl" class="contact-photo" />
+            <input asp-for="Photo" class="form-control" />
+            <span class="text-danger" asp-validation-for="Photo"></span>
+        </div>
         <button class="btn btn-primary" type="submit" style="background-color:green">Pas Uitgave Aan</button>
     </form>

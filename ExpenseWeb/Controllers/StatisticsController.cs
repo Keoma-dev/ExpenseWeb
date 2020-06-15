@@ -20,56 +20,45 @@ namespace ExpenseWeb.Controllers
         }
         public IActionResult Statistics()
         {
-            return View();
-        }
-
-        public IActionResult Highest()
-        {
             IEnumerable<Expense> expenses = _expenseDatabase.GetExpenses();
+
             if (expenses.Count() > 0)
             {
-                Expense expense = expenses.OrderByDescending(item => item.Bedrag).First();
-                ExpenseStatisticsViewModel showExpense = new ExpenseStatisticsViewModel()
-                {
-                    Omschrijving = expense.Omschrijving,
-                    Datum = expense.Datum,
-                    Bedrag = expense.Bedrag
-                };
-                return View(showExpense);
+                ExpenseStatisticsViewModel newStatistics = new ExpenseStatisticsViewModel();
+                newStatistics.HoogsteBedrag = Highest(expenses);
+                newStatistics.LaagsteBedrag = Lowest(expenses);
+                newStatistics.DuursteDag = HighestDay(expenses);
+                newStatistics.ExpensesPerMonth = OverViewPerMonth(expenses);
+                newStatistics.DuursteCategorie = HighestCategory(expenses);
+                newStatistics.GoedkoopsteCategorie = CheapestCategory(expenses);
+                return View(newStatistics);
             }
             else
             {
                 return View();
             }
+        }
+
+        public Expense Highest(IEnumerable<Expense> expenses)
+        {                        
+                Expense expense = expenses.OrderByDescending(item => item.Bedrag).First();
+                Expense highestExpense = new Expense() { Bedrag = expense.Bedrag, Omschrijving = expense.Omschrijving, Categorie = expense.Categorie, Datum = expense.Datum };             
+
+                return highestExpense;                    
             
         }
-        public IActionResult Lowest()
-        {
-            IEnumerable<Expense> expenses = _expenseDatabase.GetExpenses();
-            if (expenses.Count() > 0)
-            {
-                Expense expense = expenses.OrderByDescending(item => item.Bedrag).Last();
-            ExpenseStatisticsViewModel showExpense = new ExpenseStatisticsViewModel()
-            {
-                Omschrijving = expense.Omschrijving,
-                Datum = expense.Datum,
-                Bedrag = expense.Bedrag
-            };
-            return View(showExpense);
-            }
-            else
-            {
-                return View();
-            }
+        public Expense Lowest(IEnumerable<Expense> expenses)
+        {           
+            Expense expense = expenses.OrderByDescending(item => item.Bedrag).Last();
+            Expense lowestExpense = new Expense() { Bedrag = expense.Bedrag, Omschrijving = expense.Omschrijving, Categorie = expense.Categorie, Datum = expense.Datum };
+
+            return lowestExpense;
 
         }
-        public IActionResult HighestDay()
-        {
-            IEnumerable<Expense> expenses = _expenseDatabase.GetExpenses();
-            if (expenses.Count() > 0)
-            {
-                var groupedByDate = expenses.GroupBy(expense => expense.Datum.Date);
-            ExpenseStatisticsViewModel newExpense = new ExpenseStatisticsViewModel() { Bedrag = 0 };
+        public Expense HighestDay(IEnumerable<Expense> expenses)
+        {           
+            var groupedByDate = expenses.GroupBy(expense => expense.Datum.Date);
+            Expense highestDay = new Expense() { Bedrag = 0 };
 
             foreach (var expense in groupedByDate)
             {                
@@ -78,27 +67,20 @@ namespace ExpenseWeb.Controllers
                 {
                     totalExpense += bedrag.Bedrag;
                 }
-                if (totalExpense > newExpense.Bedrag)
+                if (totalExpense > highestDay.Bedrag)
                 {
-                    newExpense.Bedrag = totalExpense;
-                    newExpense.Datum = expense.Key;
+                    highestDay.Bedrag = totalExpense;
+                    highestDay.Datum = expense.Key;
                 }
             }
 
-            return View(newExpense);
-            }
-            else
-            {
-                return View();
-            }
+            return highestDay;
+            
         }
-        public IActionResult OverViewPerMonth()
-        {
-            IEnumerable<Expense> expenses = _expenseDatabase.GetExpenses();
-            if (expenses.Count() > 0)
-            {
-                var groupedByDate = expenses.GroupBy(expense => expense.Datum.Month);
-            List<ExpenseListViewModel> expensesPerMonth = new List<ExpenseListViewModel>();
+        public List<Expense> OverViewPerMonth(IEnumerable<Expense> expenses)
+        {           
+            var groupedByDate = expenses.GroupBy(expense => expense.Datum.Month);
+            List<Expense> expensesPerMonth = new List<Expense>();
 
             foreach (var expense in groupedByDate)
             {
@@ -110,24 +92,17 @@ namespace ExpenseWeb.Controllers
                     date = bedrag.Datum;
                 }
 
-                expensesPerMonth.Add(new ExpenseListViewModel { Bedrag = totalExpense, Datum = date });
-            }           
+                expensesPerMonth.Add(new Expense { Bedrag = totalExpense, Datum = date });
+            }
 
-            return View(expensesPerMonth);
-            }
-            else
-            {
-                return View();
-            }
+            return expensesPerMonth;
         }
 
-        public IActionResult HighestCategory()
+        public Expense HighestCategory(IEnumerable<Expense> expenses)
         {
-            IEnumerable<Expense> expenses = _expenseDatabase.GetExpenses();
-            if (expenses.Count() > 0)
-            {
+            
                 var groupedByCategory = expenses.GroupBy(expense => expense.Categorie);
-                ExpenseStatisticsViewModel newExpense = new ExpenseStatisticsViewModel() { Bedrag = 0 };
+                Expense newExpense = new Expense { Bedrag = 0 };
 
                 foreach (var expense in groupedByCategory)
                 {
@@ -143,20 +118,13 @@ namespace ExpenseWeb.Controllers
                     }
                 }
 
-                return View(newExpense);
-            }
-            else
-            {
-                return View();
-            }
+                return newExpense;                       
         }
-        public IActionResult CheapestCategory()
+        public Expense CheapestCategory(IEnumerable<Expense> expenses)
         {
-            IEnumerable<Expense> expenses = _expenseDatabase.GetExpenses();
-            if (expenses.Count() > 0)
-            {
+           
                 var groupedByCategory = expenses.GroupBy(expense => expense.Categorie);
-                ExpenseStatisticsViewModel newExpense = new ExpenseStatisticsViewModel() { Bedrag = 0 };
+                Expense newExpense = new Expense { Bedrag = 0 };
                 newExpense.Bedrag = 0;
 
                 foreach (var expense in groupedByCategory)
@@ -173,12 +141,8 @@ namespace ExpenseWeb.Controllers
                     }
                 }
 
-                return View(newExpense);
-            }
-            else
-            {
-                return View();
-            }
+                return newExpense;
+            
         }
     }
 }

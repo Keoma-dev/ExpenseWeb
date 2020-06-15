@@ -12,5 +12,6 @@ namespace ExpenseWeb.Domain
         public DateTime Datum { get; set; }
         public decimal Bedrag { get; set; }
         public string Categorie { get; set; }
+        public string PhotoUrl { get; set; }
     }
 }

@@ -6,16 +6,23 @@ using ExpenseWeb.Database;
 using ExpenseWeb.Models;
 using Microsoft.AspNetCore.Mvc;
 using ExpenseWeb.Domain;
+using Microsoft.AspNetCore.Http;
+using System.IO;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 
 namespace ExpenseWeb.Controllers
 {
     public class ExpenseController : Controller
     {
         private readonly IExpenseDatabase _expenseDatabase;
+        private readonly IWebHostEnvironment _hostEnvironment;
 
-        public ExpenseController(IExpenseDatabase expenseDatabase)
+        public ExpenseController(IExpenseDatabase expenseDatabase, IWebHostEnvironment hostEnvironment)
         {
             _expenseDatabase = expenseDatabase;
+            _hostEnvironment = hostEnvironment;
+            
         }
 
         public IActionResult Create()
@@ -35,6 +42,12 @@ namespace ExpenseWeb.Controllers
                 
             };
 
+            if (expense.Photo != null )
+            {
+                string uniqueFileName = UploadExpensePhoto(expense.Photo);
+                newExpense.PhotoUrl = "/photos/" + uniqueFileName;
+            }
+
             _expenseDatabase.Insert(newExpense);
             return RedirectToAction("Index");
         }
@@ -45,7 +58,7 @@ namespace ExpenseWeb.Controllers
 
             foreach (var expense in expensesFromDb)
             {
-                expenses.Add(new ExpenseListViewModel { Id = expense.Id, Omschrijving = expense.Omschrijving, Datum = expense.Datum, Bedrag = expense.Bedrag, Categorie = expense.Categorie });
+                expenses.Add(new ExpenseListViewModel { Id = expense.Id, Omschrijving = expense.Omschrijving, Datum = expense.Datum, Bedrag = expense.Bedrag, Categorie = expense.Categorie, PhotoUrl = expense.PhotoUrl });
             }
             return View(expenses);
         }        
@@ -64,7 +77,9 @@ namespace ExpenseWeb.Controllers
                 Omschrijving = expense.Omschrijving,
                 Datum = expense.Datum,
                 Bedrag = expense.Bedrag,
-                Categorie = expense.Categorie
+                Categorie = expense.Categorie,
+                PhotoUrl = expense.PhotoUrl
+
             };
             return View(showExpense);
         }
@@ -81,9 +96,25 @@ namespace ExpenseWeb.Controllers
                 Categorie = editedExpense.Categorie                
             };
 
+            string uniqueFileName = UploadExpensePhoto(editedExpense.Photo);
+            expense.PhotoUrl = "/photos/" + uniqueFileName;
+
             _expenseDatabase.Update(id, expense);
             return RedirectToAction("Index");
-        }       
+        }   
+        public string UploadExpensePhoto(IFormFile photo)
+        {
+            string uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(photo.FileName);
+            string pathName = Path.Combine(_hostEnvironment.WebRootPath, "photos");
+            string fileNameWithPath = Path.Combine(pathName, uniqueFileName);
+
+            using (var stream = new FileStream(fileNameWithPath, FileMode.Create))
+            {
+                photo.CopyTo(stream);
+            }
+
+            return uniqueFileName;
+        }
 
         
     }

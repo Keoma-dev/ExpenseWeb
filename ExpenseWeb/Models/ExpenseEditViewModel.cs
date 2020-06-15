@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 
 namespace ExpenseWeb.Models
 {
@@ -9,6 +10,9 @@ namespace ExpenseWeb.Models
         public DateTime Datum { get; set; }
         public decimal Bedrag { get; set; }
         public string Categorie { get; set; }
+        public string PhotoUrl { get; set; }
+
+        public IFormFile Photo { get; set; }
     }
         
 }

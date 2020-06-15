@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace ExpenseWeb.Models
@@ -10,6 +11,8 @@ namespace ExpenseWeb.Models
 
         public decimal Bedrag { get; set; }
         public string Categorie { get; set; }
+
+        public IFormFile Photo { get; set; }
     }
 
 }

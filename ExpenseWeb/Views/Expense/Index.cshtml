@@ -20,36 +20,45 @@
 
         @foreach (var expense in SortList(Model))
         {
-            <tr>
-                <td>
-                    @expense.Omschrijving
-                </td>
-                <td>
-                    € @expense.Bedrag
-                </td>
-                <td>
-                    @expense.Datum
-                </td>
-                <td>
-                    @expense.Categorie
-                </td>
-                <td>
-                    <form asp-controller="Expense" asp-action="Delete" asp-route-id="@expense.Id"><button class="btn btn-primary" type="submit" style="background-color:red">Verwijder</button></form>
-                </td>
-                <td>
-                    <form asp-controller="Expense" asp-action="Edit" asp-route-id="@expense.Id" method="get"><button class="btn btn-primary" style="background-color:green">Pas Aan</button></form>
-                </td>
-            </tr>
+    <tr>
+        <td>
+            @expense.Omschrijving
+        </td>
+        <td>
+            € @expense.Bedrag
+        </td>
+        <td>
+            @expense.Datum
+        </td>
+        <td>
+            @expense.Categorie
+        </td>
+        <td>            
+            <img src="@expense.PhotoUrl" class="photo-url" />
+        </td>
+        <td>
+            <form asp-controller="Expense" asp-action="Delete" asp-route-id="@expense.Id"><button class="btn btn-primary" type="submit" style="background-color:red">Verwijder</button></form>
+        </td>
+        <td>
+            <form asp-controller="Expense" asp-action="Edit" asp-route-id="@expense.Id" method="get"><button class="btn btn-primary" style="background-color:green">Pas Aan</button></form>
+        </td>
+    </tr>
         }
 
     </table>
 }
+
 else
 {
     <p>
         Er zijn nog geen uitgaven toegevoegd!
     </p>
 }
+<style>
+    .photo-url {
+        max-width: 100px;
+    }
+</style>
 
 @functions{
     public IEnumerable<ExpenseWeb.Models.ExpenseListViewModel> SortList(IEnumerable<ExpenseWeb.Models.ExpenseListViewModel> list)

@@ -1,6 +1,6 @@
 ﻿@model ExpenseWeb.Models.ExpenseCreateViewModel
 
-    <form asp-controller="expense" asp-action="create" method="post">
+    <form asp-controller="expense" asp-action="create" method="post" enctype="multipart/form-data">
         <div class="form-group">
             <label asp-for="Omschrijving"></label>
             <input class="form-control" asp-for="Omschrijving" />
@@ -23,6 +23,11 @@
                 <option>Huis- en tuin</option>
                 <option>Multimedia</option>
             </select>
+        </div>
+        <div class="form-group">
+            <label asp-for="Photo"></label>
+            <input asp-for="Photo" class="form-control" />
+            <span class="text-danger" asp-validation-for="Photo"></span>
         </div>
         <button class="btn btn-primary" type="submit" style="background-color:green">Voeg Uitgave Toe</button>
     </form>

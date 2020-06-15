@@ -1,11 +1,135 @@
-﻿<p><a asp-controller="Statistics" asp-action="Highest">Hoogste Uitgave</a></p>
+﻿@model ExpenseWeb.Models.ExpenseStatisticsViewModel
 
-<p><a asp-controller="Statistics" asp-action="Lowest">Laagste Uitgave</a></p>
+@if (Model == null)
+{
+    <p>
+        Er zijn nog geen uitgaven toegevoegd!
+    </p>
+}
+else
+{
+<p>
+    <table>
+        <tr>
+            <th style="width:200px">
+                Omschrijving
+            </th>
+            <th style="width:200px">
+                Bedrag
+            </th>
+            <th style="width:200px">
+                Datum
+            </th>
+        </tr>
+        <tr>
+            <td>
+                @Model.HoogsteBedrag.Omschrijving
+            </td>
+            <td>
+                € @Model.HoogsteBedrag.Bedrag
+            </td>
+            <td>
+                @Model.HoogsteBedrag.Datum.ToString("dd/mm/yy")
+            </td>
+        </tr>
+    </table>
+</p>
+<p>
+    <table>
+        <tr>
+            <th style="width:200px">
+                Omschrijving
+            </th>
+            <th style="width:200px">
+                Bedrag
+            </th>
+            <th style="width:200px">
+                Datum
+            </th>
+        </tr>
+        <tr>
+            <td>
+                @Model.LaagsteBedrag.Omschrijving
+            </td>
+            <td>
+                € @Model.LaagsteBedrag.Bedrag
+            </td>
+            <td>
+                @Model.LaagsteBedrag.Datum.ToString("dd/mm/yy")
+            </td>
+        </tr>
+    </table>
+</p>
+<p>
+    <table>
+        <tr>
+            <th style="width:200px">
+                Totaaluitgave
+            </th>
+            <th style="width:200px">
+                Maand
+            </th>
+        </tr>
 
-<p><a asp-controller="Statistics" asp-action="HighestDay">Duurste Dag</a></p>
+        @foreach (var expense in SortList(Model.ExpensesPerMonth))
+        {
+            <tr>
+                <td>
+                    € @expense.Bedrag
+                </td>
+                <td>
+                    @expense.Datum.ToString("MMMM")
+                </td>
+            </tr>
+        }
 
-<p><a asp-controller="Statistics" asp-action="OverViewPerMonth">Overzicht per Maand</a></p>
-
-<p><a asp-controller="Statistics" asp-action="HighestCategory">Duurste Categorie</a></p>
-
-<p><a asp-controller="Statistics" asp-action="CheapestCategory">Goedkoopste Categorie</a></p>
+    </table>
+</p>
+<p>
+    <table>
+        <tr>
+            <th style="width:200px">
+                Totaal duurste categorie
+            </th>
+            <th style="width:200px">
+                Categorie
+            </th>
+        </tr>
+        <tr>
+            <td>
+                € @Model.DuursteCategorie.Bedrag
+            </td>
+            <td>
+                @Model.DuursteCategorie.Categorie
+            </td>
+        </tr>
+    </table>
+</p>
+<p>
+    <table>
+        <tr>
+            <th style="width:200px">
+                Totaal goedkoopste categorie
+            </th>
+            <th style="width:200px">
+                Categorie
+            </th>
+        </tr>
+        <tr>
+            <td>
+                € @Model.GoedkoopsteCategorie.Bedrag
+            </td>
+            <td>
+                @Model.GoedkoopsteCategorie.Categorie
+            </td>
+        </tr>
+    </table>
+</p>
+    @functions{
+        public IEnumerable<ExpenseWeb.Domain.Expense> SortList(IEnumerable<ExpenseWeb.Domain.Expense> list)
+        {
+            IEnumerable<ExpenseWeb.Domain.Expense> SortedList = list.OrderByDescending(e => e.Datum).ToList();
+            return SortedList;
+        }
+    }
+}
