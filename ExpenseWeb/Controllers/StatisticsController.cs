@@ -12,15 +12,15 @@ namespace ExpenseWeb.Controllers
 {
     public class StatisticsController : Controller
     {
-        private readonly IExpenseDatabase _expenseDatabase;
+        private readonly ExpenseDbContext _expenseDbContext;
 
-        public StatisticsController(IExpenseDatabase expenseDatabase)
+        public StatisticsController(ExpenseDbContext expenseDbContext)
         {
-            _expenseDatabase = expenseDatabase;
+            _expenseDbContext = expenseDbContext;
         }
         public IActionResult Statistics()
         {
-            IEnumerable<Expense> expenses = _expenseDatabase.GetExpenses();
+            IEnumerable<Expense> expenses = _expenseDbContext.Expenses.ToList();
 
             if (expenses.Count() > 0)
             {

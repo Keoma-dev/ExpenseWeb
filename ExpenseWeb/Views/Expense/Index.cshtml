@@ -4,18 +4,19 @@
 {
     <table>
         <tr>
-            <th style="width:300px">
+            <th style="width:250px">
                 Omschrijving
             </th>
-            <th style="width:100px">
+            <th style="width:75px">
                 Bedrag
             </th>
-            <th style="width:200px">
+            <th style="width:125px">
                 Datum
             </th>
-            <th style="width:200px">
+            <th style="width:175px">
                 Categorie
             </th>
+            <th style="width:200px">Status</th>
         </tr>
 
         @foreach (var expense in SortList(Model))
@@ -28,10 +29,13 @@
             € @expense.Bedrag
         </td>
         <td>
-            @expense.Datum
+            @expense.Datum.ToString("dd/MM/yyyy")
         </td>
         <td>
             @expense.Categorie
+        </td>
+        <td>
+            @expense.PaidStatus
         </td>
         <td>            
             <img src="@expense.PhotoUrl" class="photo-url" />

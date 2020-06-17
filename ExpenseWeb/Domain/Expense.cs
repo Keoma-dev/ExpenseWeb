@@ -13,5 +13,7 @@ namespace ExpenseWeb.Domain
         public decimal Bedrag { get; set; }
         public string Categorie { get; set; }
         public string PhotoUrl { get; set; }
+        public PaidStatus PaidStatus { get; set; }
+        public int PaidStatusId { get; set; }
     }
 }

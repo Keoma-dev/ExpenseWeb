@@ -10,6 +10,7 @@ namespace ExpenseWeb.Models
         public decimal Bedrag { get; set; }
         public string Categorie { get; set; }
         public string PhotoUrl { get; set; }
+        public string PaidStatus { get; set; }
     }
         
 }

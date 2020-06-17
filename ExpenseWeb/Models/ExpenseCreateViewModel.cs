@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace ExpenseWeb.Models
@@ -13,6 +15,8 @@ namespace ExpenseWeb.Models
         public string Categorie { get; set; }
 
         public IFormFile Photo { get; set; }
+        public List<SelectListItem> PaidStatuses { get; set; } = new List<SelectListItem>();
+        public int SelectedPaidStatus { get; set; }
     }
 
 }

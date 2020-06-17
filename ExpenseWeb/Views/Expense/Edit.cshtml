@@ -1,6 +1,6 @@
 ﻿@model ExpenseWeb.Models.ExpenseEditViewModel
 
-    <form asp-controller="expense" asp-action="edit" method="post">
+    <form asp-controller="expense" asp-action="edit" method="post" enctype="multipart/form-data">
         <div class="form-group">
             <label asp-for="Omschrijving"></label>
             <input class="form-control" asp-for="Omschrijving" />
@@ -30,6 +30,11 @@
             <img src="@Model.PhotoUrl" class="contact-photo" />
             <input asp-for="Photo" class="form-control" />
             <span class="text-danger" asp-validation-for="Photo"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="SelectedPaidStatus"></label>
+            <select class="form-control" asp-for="SelectedPaidStatus" asp-items="@Model.PaidStatuses"></select>
+            <span class="text-danger" asp-validation-for="SelectedPaidStatus"></span>
         </div>
         <button class="btn btn-primary" type="submit" style="background-color:green">Pas Uitgave Aan</button>
     </form>

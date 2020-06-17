@@ -10,36 +10,69 @@ using Microsoft.AspNetCore.Http;
 using System.IO;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace ExpenseWeb.Controllers
 {
     public class ExpenseController : Controller
     {
-        private readonly IExpenseDatabase _expenseDatabase;
+        
         private readonly IWebHostEnvironment _hostEnvironment;
+        private readonly ExpenseDbContext _expenseDbContext;
 
-        public ExpenseController(IExpenseDatabase expenseDatabase, IWebHostEnvironment hostEnvironment)
+        public ExpenseController(ExpenseDbContext expenseDbContext, IWebHostEnvironment hostEnvironment)
         {
-            _expenseDatabase = expenseDatabase;
+            _expenseDbContext = expenseDbContext;
             _hostEnvironment = hostEnvironment;
             
         }
 
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            return View();
+            ExpenseCreateViewModel vm = new ExpenseCreateViewModel();
+
+            var paidStatuses = await _expenseDbContext.PaidStatuses.ToListAsync();
+
+            foreach (PaidStatus paidStatus in paidStatuses)
+            {
+                vm.PaidStatuses.Add(new Microsoft.AspNetCore.Mvc.Rendering.SelectListItem()
+                {
+                    Value = paidStatus.Id.ToString(),
+                    Text = paidStatus.Name
+                });
+
+            }
+            return View(vm);
         }
         [HttpPost]
         [AutoValidateAntiforgeryToken]
-        public IActionResult Create(ExpenseCreateViewModel expense)
+        public async Task<IActionResult> Create(ExpenseCreateViewModel expense)
         {
+            if (!TryValidateModel(expense))
+            {
+                var paidStatuses = await _expenseDbContext.PaidStatuses.ToListAsync();
+
+                foreach (PaidStatus paidStatus in paidStatuses)
+                {
+                    expense.PaidStatuses.Add(new Microsoft.AspNetCore.Mvc.Rendering.SelectListItem()
+                    {
+                        Value = paidStatus.Id.ToString(),
+                        Text = paidStatus.Name
+                    });
+
+                }
+                return View(expense);
+            }
+
             Expense newExpense = new Expense()
             {
                 Omschrijving = expense.Omschrijving,
                 Datum = expense.Datum,
                 Bedrag = expense.Bedrag,
-                Categorie = expense.Categorie
-                
+                Categorie = expense.Categorie,
+                PaidStatusId = expense.SelectedPaidStatus
+
             };
 
             if (expense.Photo != null )
@@ -48,44 +81,68 @@ namespace ExpenseWeb.Controllers
                 newExpense.PhotoUrl = "/photos/" + uniqueFileName;
             }
 
-            _expenseDatabase.Insert(newExpense);
+            _expenseDbContext.Expenses.Add(newExpense);
+            await _expenseDbContext.SaveChangesAsync();
+            
+
             return RedirectToAction("Index");
         }
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            IEnumerable<Expense> expensesFromDb = _expenseDatabase.GetExpenses();
+            IEnumerable<Expense> expensesFromDb = await _expenseDbContext.Expenses.Include(x=>x.PaidStatus).ToListAsync();
             List<ExpenseListViewModel> expenses = new List<ExpenseListViewModel>();
+           
 
             foreach (var expense in expensesFromDb)
             {
-                expenses.Add(new ExpenseListViewModel { Id = expense.Id, Omschrijving = expense.Omschrijving, Datum = expense.Datum, Bedrag = expense.Bedrag, Categorie = expense.Categorie, PhotoUrl = expense.PhotoUrl });
+                expenses.Add(new ExpenseListViewModel 
+                    { Id = expense.Id, 
+                      Omschrijving = expense.Omschrijving, 
+                      Datum = expense.Datum, Bedrag = expense.Bedrag, 
+                      Categorie = expense.Categorie, 
+                      PhotoUrl = expense.PhotoUrl, 
+                      PaidStatus = expense.PaidStatus.Name
+                    });
             }
             return View(expenses);
         }        
     
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            _expenseDatabase.Delete(id);
+            Expense expenseToDelete = await _expenseDbContext.Expenses.FindAsync(id);
+            _expenseDbContext.Expenses.Remove(expenseToDelete);
+            await _expenseDbContext.SaveChangesAsync();
+
             return RedirectToAction("Index");
             
         }
-        public IActionResult Edit(int id)
+        public async Task<IActionResult> Edit(int id)
         {
-            var expense = _expenseDatabase.GetExpense(id);
+            var expense = await _expenseDbContext.Expenses.FindAsync(id);
+            var paidStatuses = await _expenseDbContext.PaidStatuses.ToListAsync();
+          
             ExpenseEditViewModel showExpense = new ExpenseEditViewModel()
             {                
                 Omschrijving = expense.Omschrijving,
                 Datum = expense.Datum,
                 Bedrag = expense.Bedrag,
                 Categorie = expense.Categorie,
-                PhotoUrl = expense.PhotoUrl
-
+                PhotoUrl = expense.PhotoUrl,
             };
+
+            foreach (PaidStatus paidStatus in paidStatuses)
+            {
+                showExpense.PaidStatuses.Add(new SelectListItem()
+                {
+                    Value = paidStatus.Id.ToString(),
+                    Text = paidStatus.Name
+                });
+            }
             return View(showExpense);
         }
         [HttpPost]
         [AutoValidateAntiforgeryToken]
-        public IActionResult Edit(int id, ExpenseEditViewModel editedExpense)
+        public async Task<IActionResult> Edit(int id, ExpenseEditViewModel editedExpense)
         {
             var expense = new Expense()
             {
@@ -93,13 +150,16 @@ namespace ExpenseWeb.Controllers
                 Omschrijving = editedExpense.Omschrijving,
                 Datum = editedExpense.Datum,
                 Bedrag = editedExpense.Bedrag,
-                Categorie = editedExpense.Categorie                
+                Categorie = editedExpense.Categorie,
+                PaidStatusId = editedExpense.SelectedPaidStatus
             };
 
             string uniqueFileName = UploadExpensePhoto(editedExpense.Photo);
             expense.PhotoUrl = "/photos/" + uniqueFileName;
 
-            _expenseDatabase.Update(id, expense);
+            _expenseDbContext.Update(expense);
+
+            await _expenseDbContext.SaveChangesAsync();
             return RedirectToAction("Index");
         }   
         public string UploadExpensePhoto(IFormFile photo)
