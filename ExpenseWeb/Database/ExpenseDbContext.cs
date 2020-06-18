@@ -29,8 +29,30 @@ namespace ExpenseWeb.Database
                     Id = 2,
                     Name = "Al betaald"
                 });
+
+            modelBuilder.Entity<PersonExpense>()
+                .HasKey(pe => new { pe.ExpenseId, pe.PersonId });
+
+            modelBuilder.Entity<PersonExpense>()
+                .HasOne(pe => pe.Expense)
+                .WithMany(p => p.PersonExpenses)
+                .HasForeignKey(pe => pe.ExpenseId);
+
+            modelBuilder.Entity<PersonExpense>()
+                .HasOne(pe => pe.Person)
+                .WithMany(e => e.PersonExpenses)
+                .HasForeignKey(pe => pe.PersonId);
+
+            modelBuilder.Entity<Person>()
+                .HasData(
+                    new Person() { Id = 1, Name = "Marc" },
+                    new Person() { Id = 2, Name = "An" },
+                    new Person() { Id = 3, Name = "Erik" },
+                    new Person() { Id = 4, Name = "Ria" });
             
         }
+        public DbSet<Person> Persons { get; set; }
+        public DbSet<PersonExpense> PersonExpenses { get; set; }
         public DbSet<Expense> Expenses { get; set; }
         public DbSet<PaidStatus> PaidStatuses { get; set; }
     }

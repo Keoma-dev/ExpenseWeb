@@ -4,14 +4,16 @@ using ExpenseWeb.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace ExpenseWeb.Migrations
 {
     [DbContext(typeof(ExpenseDbContext))]
-    partial class ExpenseDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200618112516_ManyToMany")]
+    partial class ManyToMany
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -90,7 +92,7 @@ namespace ExpenseWeb.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Persons");
+                    b.ToTable("Person");
 
                     b.HasData(
                         new
@@ -127,7 +129,7 @@ namespace ExpenseWeb.Migrations
 
                     b.HasIndex("PersonId");
 
-                    b.ToTable("PersonExpenses");
+                    b.ToTable("PersonExpense");
                 });
 
             modelBuilder.Entity("ExpenseWeb.Domain.Expense", b =>

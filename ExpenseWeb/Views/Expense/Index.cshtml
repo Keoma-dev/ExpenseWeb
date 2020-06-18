@@ -4,19 +4,24 @@
 {
     <table>
         <tr>
-            <th style="width:250px">
+            <th style="width:inherit">
                 Omschrijving
             </th>
-            <th style="width:75px">
+            <th style="width:inherit">
                 Bedrag
             </th>
-            <th style="width:125px">
+            <th style="width:inherit">
                 Datum
             </th>
-            <th style="width:175px">
+            <th style="width:inherit">
                 Categorie
             </th>
-            <th style="width:200px">Status</th>
+            <th style="width:inherit">
+                Status
+            </th>
+            <th style="width: inherit">
+                Personen
+            </th>
         </tr>
 
         @foreach (var expense in SortList(Model))
@@ -37,9 +42,16 @@
         <td>
             @expense.PaidStatus
         </td>
+        <td>
+            @foreach (var person in expense.Persons)
+            {
+                @person
+            }
+        </td>
         <td>            
             <img src="@expense.PhotoUrl" class="photo-url" />
         </td>
+        
         <td>
             <form asp-controller="Expense" asp-action="Delete" asp-route-id="@expense.Id"><button class="btn btn-primary" type="submit" style="background-color:red">Verwijder</button></form>
         </td>

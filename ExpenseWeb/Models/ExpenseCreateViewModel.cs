@@ -17,6 +17,9 @@ namespace ExpenseWeb.Models
         public IFormFile Photo { get; set; }
         public List<SelectListItem> PaidStatuses { get; set; } = new List<SelectListItem>();
         public int SelectedPaidStatus { get; set; }
+
+        public List<SelectListItem> Persons { get; set; } = new List<SelectListItem>();
+        public int[] SelectedPersons { get; set; }
     }
 
 }

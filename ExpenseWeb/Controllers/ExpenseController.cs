@@ -43,6 +43,11 @@ namespace ExpenseWeb.Controllers
                 });
 
             }
+
+            var persons = await _expenseDbContext.Persons.ToListAsync();
+            vm.Persons = persons.Select(person => new SelectListItem() { Value = person.Id.ToString(), Text = person.Name }).ToList
+                ();
+           
             return View(vm);
         }
         [HttpPost]
@@ -71,7 +76,8 @@ namespace ExpenseWeb.Controllers
                 Datum = expense.Datum,
                 Bedrag = expense.Bedrag,
                 Categorie = expense.Categorie,
-                PaidStatusId = expense.SelectedPaidStatus
+                PaidStatusId = expense.SelectedPaidStatus,
+                PersonExpenses = expense.SelectedPersons.Select(person => new PersonExpense() { PersonId = person }).ToList()
 
             };
 
@@ -89,7 +95,7 @@ namespace ExpenseWeb.Controllers
         }
         public async Task<IActionResult> Index()
         {
-            IEnumerable<Expense> expensesFromDb = await _expenseDbContext.Expenses.Include(x=>x.PaidStatus).ToListAsync();
+            IEnumerable<Expense> expensesFromDb = await _expenseDbContext.Expenses.Include(x=>x.PaidStatus).Include(x=>x.PersonExpenses).ThenInclude(personExpense=>personExpense.Person).ToListAsync();
             List<ExpenseListViewModel> expenses = new List<ExpenseListViewModel>();
            
 
@@ -101,7 +107,8 @@ namespace ExpenseWeb.Controllers
                       Datum = expense.Datum, Bedrag = expense.Bedrag, 
                       Categorie = expense.Categorie, 
                       PhotoUrl = expense.PhotoUrl, 
-                      PaidStatus = expense.PaidStatus.Name
+                      PaidStatus = expense.PaidStatus.Name,
+                      Persons = expense.PersonExpenses.Select(personExpense => personExpense.Person.Name)
                     });
             }
             return View(expenses);
@@ -118,7 +125,10 @@ namespace ExpenseWeb.Controllers
         }
         public async Task<IActionResult> Edit(int id)
         {
-            var expense = await _expenseDbContext.Expenses.FindAsync(id);
+            var expense = await _expenseDbContext.Expenses.FindAsync(id);         
+
+           
+
             var paidStatuses = await _expenseDbContext.PaidStatuses.ToListAsync();
           
             ExpenseEditViewModel showExpense = new ExpenseEditViewModel()
@@ -138,26 +148,37 @@ namespace ExpenseWeb.Controllers
                     Text = paidStatus.Name
                 });
             }
+
+            var persons = await _expenseDbContext.Persons.ToListAsync();
+            showExpense.Persons = persons.Select(person => new SelectListItem() { Value = person.Id.ToString(), Text = person.Name }).ToList();
+
             return View(showExpense);
         }
         [HttpPost]
         [AutoValidateAntiforgeryToken]
         public async Task<IActionResult> Edit(int id, ExpenseEditViewModel editedExpense)
         {
-            var expense = new Expense()
+
+            Expense domainExpense = await _expenseDbContext.Expenses.Include(e => e.PersonExpenses).FirstOrDefaultAsync(e => e.Id == id);
+
+            _expenseDbContext.PersonExpenses.RemoveRange(domainExpense.PersonExpenses);
+
+
+            domainExpense.Omschrijving = editedExpense.Omschrijving;
+            domainExpense.Datum = editedExpense.Datum;
+            domainExpense.Bedrag = editedExpense.Bedrag;
+            domainExpense.Categorie = editedExpense.Categorie;
+            domainExpense.PaidStatusId = editedExpense.SelectedPaidStatus;
+            domainExpense.PersonExpenses = editedExpense.SelectedPersons.Select(person => new PersonExpense() { PersonId = person }).ToList();
+            
+
+            if (editedExpense.Photo != null)
             {
-                Id = id,
-                Omschrijving = editedExpense.Omschrijving,
-                Datum = editedExpense.Datum,
-                Bedrag = editedExpense.Bedrag,
-                Categorie = editedExpense.Categorie,
-                PaidStatusId = editedExpense.SelectedPaidStatus
-            };
+                string uniqueFileName = UploadExpensePhoto(editedExpense.Photo);
+                domainExpense.PhotoUrl = "/photos/" + uniqueFileName;
+            }
 
-            string uniqueFileName = UploadExpensePhoto(editedExpense.Photo);
-            expense.PhotoUrl = "/photos/" + uniqueFileName;
-
-            _expenseDbContext.Update(expense);
+            _expenseDbContext.Update(domainExpense);
 
             await _expenseDbContext.SaveChangesAsync();
             return RedirectToAction("Index");

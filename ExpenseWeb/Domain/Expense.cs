@@ -15,5 +15,7 @@ namespace ExpenseWeb.Domain
         public string PhotoUrl { get; set; }
         public PaidStatus PaidStatus { get; set; }
         public int PaidStatusId { get; set; }
+
+        public ICollection<PersonExpense> PersonExpenses { get; set; }
     }
 }

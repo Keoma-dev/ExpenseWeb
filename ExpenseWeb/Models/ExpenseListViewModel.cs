@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace ExpenseWeb.Models
 {
@@ -11,6 +12,7 @@ namespace ExpenseWeb.Models
         public string Categorie { get; set; }
         public string PhotoUrl { get; set; }
         public string PaidStatus { get; set; }
+        public IEnumerable<string> Persons { get; set; }
     }
         
 }

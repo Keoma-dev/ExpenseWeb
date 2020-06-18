@@ -36,5 +36,12 @@
             <select class="form-control" asp-for="SelectedPaidStatus" asp-items="@Model.PaidStatuses"></select>
             <span class="text-danger" asp-validation-for="SelectedPaidStatus"></span>
         </div>
+
+        <div class="form-group">
+            <label asp-for="SelectedPersons"></label>
+            <select multiple class="form-control" asp-for="SelectedPersons" asp-items="@Model.Persons"></select>
+            <span class="text-danger" asp-validation-for="SelectedPersons"></span>
+        </div>
+
         <button class="btn btn-primary" type="submit" style="background-color:green">Pas Uitgave Aan</button>
     </form>
