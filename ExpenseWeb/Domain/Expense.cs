@@ -17,5 +17,8 @@ namespace ExpenseWeb.Domain
         public int PaidStatusId { get; set; }
 
         public ICollection<PersonExpense> PersonExpenses { get; set; }
+
+        public ExpenseAppUser expenseAppUser { get; set; }
+        public string UserId { get; set; }
     }
 }

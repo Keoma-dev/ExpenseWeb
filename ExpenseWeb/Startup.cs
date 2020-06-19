@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ExpenseWeb.Database;
+using ExpenseWeb.Domain;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -31,8 +33,8 @@ namespace ExpenseWeb
             {
                 options.UseSqlServer("Server=(localdb)\\mssqllocaldb;Database=ExpenseDatabaseDemo;Trusted_Connection=True;MultipleActiveResultSets=true");
             });
-            
-            
+
+            services.AddDefaultIdentity<ExpenseAppUser>().AddEntityFrameworkStores<ExpenseDbContext>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -52,6 +54,7 @@ namespace ExpenseWeb
             app.UseStaticFiles();
 
             app.UseRouting();
+            app.UseAuthentication();
 
             app.UseAuthorization();
 
@@ -60,6 +63,7 @@ namespace ExpenseWeb
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Expense}/{action=Index}/{id?}");
+                endpoints.MapRazorPages();
             });
         }
     }

@@ -12,6 +12,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace ExpenseWeb.Controllers
 {
@@ -77,7 +79,8 @@ namespace ExpenseWeb.Controllers
                 Bedrag = expense.Bedrag,
                 Categorie = expense.Categorie,
                 PaidStatusId = expense.SelectedPaidStatus,
-                PersonExpenses = expense.SelectedPersons.Select(person => new PersonExpense() { PersonId = person }).ToList()
+                PersonExpenses = expense.SelectedPersons.Select(person => new PersonExpense() { PersonId = person }).ToList(),
+                UserId = User.FindFirstValue(ClaimTypes.NameIdentifier)
 
             };
 
@@ -95,7 +98,7 @@ namespace ExpenseWeb.Controllers
         }
         public async Task<IActionResult> Index()
         {
-            IEnumerable<Expense> expensesFromDb = await _expenseDbContext.Expenses.Include(x=>x.PaidStatus).Include(x=>x.PersonExpenses).ThenInclude(personExpense=>personExpense.Person).ToListAsync();
+            IEnumerable<Expense> expensesFromDb = await _expenseDbContext.Expenses.Include(x=>x.PaidStatus).Include(x=>x.PersonExpenses).ThenInclude(personExpense=>personExpense.Person).Where(expense => expense.UserId == User.FindFirstValue(ClaimTypes.NameIdentifier)).ToListAsync();
             List<ExpenseListViewModel> expenses = new List<ExpenseListViewModel>();
            
 
@@ -113,6 +116,7 @@ namespace ExpenseWeb.Controllers
             }
             return View(expenses);
         }        
+        [Authorize]
     
         public async Task<IActionResult> Delete(int id)
         {
@@ -123,6 +127,7 @@ namespace ExpenseWeb.Controllers
             return RedirectToAction("Index");
             
         }
+        [Authorize]
         public async Task<IActionResult> Edit(int id)
         {
             var expense = await _expenseDbContext.Expenses.FindAsync(id);         
@@ -156,6 +161,7 @@ namespace ExpenseWeb.Controllers
         }
         [HttpPost]
         [AutoValidateAntiforgeryToken]
+
         public async Task<IActionResult> Edit(int id, ExpenseEditViewModel editedExpense)
         {
 
